@@ -4,6 +4,7 @@ export default class InstaService {
         this._apiBase = 'http://localhost:3000'; // _ означает неизменяемое значение(просто договоренность)
     }
 
+    // метод которй позволяет получать данные
     getResource = async (url) => {
         const res = await fetch(`${this._apiBase}${url}`);
 
@@ -12,5 +13,10 @@ export default class InstaService {
         }
 
         return await res.json();
+    }
+
+    getAllPosts = async () => {
+        const res = await this.getResource('/posts/');
+        return res;
     }
 }

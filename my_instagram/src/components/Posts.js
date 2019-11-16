@@ -1,12 +1,74 @@
 import React, {Component} from 'react';
-import Post from './Post';
-
+// import Post from './Post';
+import InstaService from '../services/instaService';
+import User from './User';
+import ErrorMessage from './Error';
+ 
 export default class Posts extends Component{
+    InstaService = new InstaService();
+    state = {
+        posts: [], 
+        error: false
+    }
+
+    componentDidMount(){
+        this.updatePosts();
+    }
+
+    updatePosts(){
+        this.InstaService.getAllPosts()
+        .then(this.onPostsLoaded)
+        .catch(this.onError);
+    }
+
+    onPostsLoaded = (posts) => {
+        this.setState({
+            posts: posts,
+            error: false
+        })
+        // console.log(this.state.posts); // чтобы проверить выводится ли массив 
+    }
+
+    onError = (err) => {
+        this.setState({
+            error: true
+        })        
+    }
+
+    renderItems(arr) {
+        return arr.map(item =>{
+            const {name, altname, photo, src, alt, descr, id} = item;
+
+            return (
+                <div key = {id} className="post">
+                    <User src={photo} 
+                        alt={altname}
+                        name={name}
+                        min />
+                    <img src={src} alt={alt}></img>
+                    <div className="post__name">
+                        {name}
+                    </div>
+                    <div className="post__descr">
+                        {descr}
+                    </div>
+                </div>  
+            )
+        });
+    }
+
     render(){
+
+        const {error, posts} = this.state;
+
+        if (error){
+            return <ErrorMessage />
+        }
+
+        const items = this.renderItems(posts);
         return(
             <div className="left">
-                <Post src="https://cdn25.img.ria.ru/images/153102/43/1531024341_0:15:3072:1743_600x0_80_0_0_d537d7831eeaa2bab376a15e060e7ec5.jpg" alt="instagram"/>
-                <Post src="https://cdn21.img.ria.ru/images/155982/01/1559820160_0:176:3072:1904_600x0_80_0_0_75f40f380e49f2561274b50a7abc6ecd.jpg" alt="second" />
+                {items}
             </div>
         )
     }
